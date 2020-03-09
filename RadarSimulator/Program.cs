@@ -22,7 +22,7 @@ namespace RadarSimulator
 
             var rand = new Random(50);
             int i = 0;
-            while (i<100)
+            while (i<40)
             {
                 var randomNumber = rand.NextDouble();
 

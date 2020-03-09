@@ -62,6 +62,7 @@ namespace WPFTestApp
 
         private void AddObjectToCanvas(TrackableObject c, TextBlock t)
         {
+            if (float.IsNaN(c.Location.X) || float.IsNaN(c.Location.Y)) return;
             MainCanvas.Children.Add(t);
             Canvas.SetLeft(t, c.Location.X * 100 + 500);
             Canvas.SetTop(t, c.Location.Y * 100 + 500);

@@ -87,8 +87,9 @@ namespace RadarSimulator
                         
                         if (points.Count > 0 )
                         {
-                            if( float.IsNaN(points[0].X) || float.IsNaN(points[0].Y) || float.IsInfinity(points[0].X) || float.IsInfinity(points[0].Y))
+                            if (float.IsNaN(points[0].X) || float.IsNaN(points[0].Y) || float.IsInfinity(points[0].X) || float.IsInfinity(points[0].Y))
                             {
+                                FireClearingEvent();
                                 break;
                             }
 
@@ -97,6 +98,11 @@ namespace RadarSimulator
                             xpositive = point.X > _location.X;
                             ypositive = point.Y > _location.Y;
                             _location = new Coordinates(point.X, point.Y);
+                            if (Math.Abs(point.X) > 5 || Math.Abs(point.Y) > 5)
+                            {
+                                FireClearingEvent();
+                                break;
+                            }
                             LocationUpdated?.Invoke(this, Location);
                         }
                         else
@@ -114,6 +120,7 @@ namespace RadarSimulator
                         {
                             if (float.IsNaN(points[0].X) || float.IsNaN(points[0].Y) || float.IsInfinity(points[0].X) || float.IsInfinity(points[0].Y))
                             {
+                                FireClearingEvent();
                                 break;
                             }
                             Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, Y mode");
@@ -121,6 +128,11 @@ namespace RadarSimulator
                             xpositive = point.X > _location.X;
                             ypositive = point.Y > _location.Y;
                             _location = new Coordinates(point.X, point.Y);
+                            if (Math.Abs(point.X) > 5 || Math.Abs(point.Y) > 5)
+                            {
+                                FireClearingEvent();
+                                break;
+                            }
                             LocationUpdated?.Invoke(this, Location);
                         }
                         else
@@ -137,8 +149,17 @@ namespace RadarSimulator
 
                 }
             }
-
         }
+
+
+
+        private void FireClearingEvent()
+        {
+            _location = new Coordinates(float.NaN, float.NaN);
+            LocationUpdated?.Invoke(this, Location);
+           
+        }
+
         private PointF GetPointInRightDirection(List<PointF> points, bool xmode)
         {
 
