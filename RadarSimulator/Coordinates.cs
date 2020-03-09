@@ -2,10 +2,10 @@
 {
     public class Coordinates
     {
-        public double X { get;}
-        public double Y { get; }
+        public float X { get;}
+        public float Y { get; }
 
-        public Coordinates(double x, double y)
+        public Coordinates(float x, float y)
         {
             X = x;
             Y = y;

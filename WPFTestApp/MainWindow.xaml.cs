@@ -53,7 +53,7 @@ namespace WPFTestApp
                 
                 var textBlock = CreateObjectUI(color, obj.Id.ToString());
 
-                RemoveObjectFromCanvas(obj);
+               RemoveObjectFromCanvas(obj);
 
                 AddObjectToCanvas(obj, textBlock);
 

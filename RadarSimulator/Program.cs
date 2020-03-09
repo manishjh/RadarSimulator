@@ -45,7 +45,7 @@ namespace RadarSimulator
                     obj.LocationUpdated += ObjectLocationUpdated;
                    // Console.WriteLine($"Object created with type {obj.Type.ToString()}, and Id = {obj.Id}");
                     _objects.TryAdd(obj.Id, obj);
-                    Thread.Sleep(5000);
+                    Thread.Sleep(1000);
                 }
             }
 
