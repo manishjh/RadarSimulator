@@ -23,12 +23,15 @@ namespace RadarSimulator
 
         private float A, B, C, D, E, F;
 
+        private bool Xmode = true;
+
+        private bool xpositive = true;
+        private bool ypositive = true;
+
         public TrackableObject()
         {
-            Id = IdGenerator.Instance.GetId();
-
             Type = ObjectTypeEnum.Generic;
-
+            Id = IdGenerator.Instance.GetId();
             _random = new Random(Id);
 
             A = _random.Next(-5, 6);
@@ -38,19 +41,28 @@ namespace RadarSimulator
             E = _random.Next(-5, 6);
             F = _random.Next(-5, 6);
 
-            //_location = new Coordinates(_random.NextDouble(), _random.NextDouble());
-            float x = (float)(_random.NextDouble() *  _random.Next(-1, 2));
+
+            float x = (float)(_random.NextDouble() * (_random.Next(-2, 1) + 1));
 
             var points = IntersectConicAndLine(A, B, C, D, E, F, new PointF(x, 0), new PointF(x, 1));
 
-            velocity = (float)(_random.Next(-1, 2) * 0.1);
 
-            if (points.Count>0 && !float.IsNaN(points[0].X) && !float.IsNaN(points[0].Y) && !float.IsInfinity(points[0].X) && !float.IsInfinity(points[0].Y))
+            var velArray = new List<float> { -1, 1 };
+            velocity = (float)(velArray[(_random.Next(0, 2))] * 0.02);
+            
+
+            xpositive = velocity > 0;
+            ypositive = velocity > 0;
+            
+            //if(Id==78)
+            if (points.Count > 0 && !float.IsNaN(points[0].X) && !float.IsNaN(points[0].Y) && !float.IsInfinity(points[0].X) && !float.IsInfinity(points[0].Y))
             {
+
                 _location = new Coordinates(points[0].X, points[0].Y);
+                Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, A :{A}, B:{B}, C:{C}, D:{D}, E:{E}, F:{F}, velocity : {velocity}");
                 Task.Run(async () => await UpdateLocation());
             }
-           
+
         }
 
         public async Task UpdateLocation()
@@ -64,19 +76,73 @@ namespace RadarSimulator
             http://csharphelper.com/blog/2014/11/see-where-a-line-intersects-a-conic-section-in-c/?unapproved=465406&moderation-hash=14cbfb5f55c46e05e221a0a4a96c4609#comment-465406
            */
 
-            while(true)
+            while (true)
             {
                 await Task.Delay(100);
-
-                var points = IntersectConicAndLine(A, B, C, D, E, F, new PointF(_location.X + (float)(velocity),0), new PointF(_location.X + (float)(velocity), 1));
-
-                if (points.Count > 0)
+                try
                 {
-                    var point = points.First(x=> x.Y-_location.Y == points.Min(k => k.Y - _location.Y));
-                    _location = new Coordinates(point.X, point.Y);
-                    LocationUpdated?.Invoke(this, Location);
+                    if (Xmode)
+                    {
+                        var points = IntersectConicAndLine(A, B, C, D, E, F, new PointF(_location.X + (float)(velocity), 0), new PointF(_location.X + (float)(velocity), 1));
+                        
+                        if (points.Count > 0 )
+                        {
+                            if( float.IsNaN(points[0].X) || float.IsNaN(points[0].Y) || float.IsInfinity(points[0].X) || float.IsInfinity(points[0].Y))
+                            {
+                                break;
+                            }
+
+                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, X mode");
+                            var point = GetPointInRightDirection(points, Xmode);
+                            xpositive = point.X > _location.X;
+                            ypositive = point.Y > _location.Y;
+                            _location = new Coordinates(point.X, point.Y);
+                            LocationUpdated?.Invoke(this, Location);
+                        }
+                        else
+                        {
+                            Xmode = false;
+                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting Y mode");
+                            velocity = (float)((ypositive ? 1 : -1) * 0.1);
+                        }
+                    }
+                    else
+                    {
+                        var points = IntersectConicAndLine(A, B, C, D, E, F, new PointF(0, _location.Y + (float)(velocity)), new PointF(1, _location.Y + (float)(velocity)));
+
+                        if (points.Count > 0 )
+                        {
+                            if (float.IsNaN(points[0].X) || float.IsNaN(points[0].Y) || float.IsInfinity(points[0].X) || float.IsInfinity(points[0].Y))
+                            {
+                                break;
+                            }
+                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, Y mode");
+                            var point = GetPointInRightDirection(points, Xmode);
+                            xpositive = point.X > _location.X;
+                            ypositive = point.Y > _location.Y;
+                            _location = new Coordinates(point.X, point.Y);
+                            LocationUpdated?.Invoke(this, Location);
+                        }
+                        else
+                        {
+                            Xmode = true;
+                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting X mode");
+                            velocity = (float)((xpositive ? 1 : -1) * 0.1);
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine($"Error : Id :{Id} , x: {_location.X}, y: {_location.Y},",ex);
+
                 }
             }
+
+        }
+        private PointF GetPointInRightDirection(List<PointF> points, bool xmode)
+        {
+
+            return points.First(p => Math.Abs(p.Y - _location.Y) + Math.Abs(p.X - _location.X) == points.Min(o => Math.Abs(o.Y - _location.Y) + Math.Abs(o.X - _location.X)));
 
         }
 
