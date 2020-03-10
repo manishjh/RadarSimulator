@@ -81,18 +81,22 @@ namespace WPFTestApp
         private static TextBlock CreateObjectUI(Color color, string id)
         {
             var ellipse = new Ellipse();
-            ellipse.Width = 20;
+            ellipse.Width = 30;
             ellipse.Height = 20;
             ellipse.Fill = new SolidColorBrush() { Color = color };
+            ellipse.VerticalAlignment = VerticalAlignment.Center;
+            
 
             var t = new TextBlock();
             t.Text = id;
             t.Name = "e" + id;
-            t.Width = 20;
+            t.Width = 30;
             t.Height = 20;
+            
 
             t.Foreground = new SolidColorBrush() { Color = Color.FromRgb((byte)255, (byte)255, (byte)255) };
             t.TextAlignment = TextAlignment.Center;
+            t.VerticalAlignment = VerticalAlignment.Center;
             var v = new VisualBrush();
             v.Visual = ellipse;
             t.Background = v;

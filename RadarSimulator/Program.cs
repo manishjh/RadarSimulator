@@ -21,14 +21,15 @@ namespace RadarSimulator
 
             var rand = new Random(50);
             int i = 0;
-            while (i<40)
+            int range = 10;
+            while (i<1000)
             {
                 var randomNumber = rand.NextDouble();
 
                 if (randomNumber > 0.9)
                 {
                    
-                    var obj = new TrackableObject();
+                    var obj = new TrackableObject(range);
                     obj.LocationUpdated += ObjectLocationUpdated;
                     _objects.TryAdd(obj.Id, obj);
                     i++;

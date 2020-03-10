@@ -26,27 +26,27 @@ namespace RadarSimulator
         private bool xpositive = true;
         private bool ypositive = true;
 
-        public TrackableObject()
+        public TrackableObject(int range)
         {
             Type = ObjectTypeEnum.Generic;
             Id = IdGenerator.Instance.GetId();
             _random = new Random(Id);
 
-            A = _random.Next(-5, 6);
-            B = _random.Next(-5, 6);
-            C = _random.Next(-5, 6);
-            D = _random.Next(-5, 6);
-            E = _random.Next(-5, 6);
-            F = _random.Next(-5, 6);
+            A = _random.Next(-range, range);
+            B = _random.Next(-range, range);
+            C = _random.Next(-range, range);
+            D = _random.Next(-range, range);
+            E = _random.Next(-range, range);
+            F = _random.Next(-range, range);
 
 
-            float x = (float)(_random.NextDouble() * (_random.Next(-2, 1) + 1));
+            float x = (float)(_random.Next(-range * 2,range * 2));
 
             var points = IntersectConicAndLine(A, B, C, D, E, F, new PointF(x, 0), new PointF(x, 1));
 
 
             var velArray = new List<float> { -1, 1 };
-            velocity = (float)(velArray[(_random.Next(0, 2))] * 0.02);
+            velocity = (float)(velArray[(_random.Next(0, 2))] * 0.04);
             
 
             xpositive = velocity > 0;
@@ -91,7 +91,7 @@ namespace RadarSimulator
                                 break;
                             }
 
-                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, X mode");
+                            //Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, X mode");
                             var point = GetPointInRightDirection(points, Xmode);
                             xpositive = point.X > _location.X;
                             ypositive = point.Y > _location.Y;
@@ -106,7 +106,7 @@ namespace RadarSimulator
                         else
                         {
                             Xmode = false;
-                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting Y mode");
+                           // Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting Y mode");
                             velocity = (float)((ypositive ? 1 : -1) * 0.1);
                         }
                     }
@@ -121,7 +121,7 @@ namespace RadarSimulator
                                 FireClearingEvent();
                                 break;
                             }
-                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, Y mode");
+                            //Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, Y mode");
                             var point = GetPointInRightDirection(points, Xmode);
                             xpositive = point.X > _location.X;
                             ypositive = point.Y > _location.Y;
@@ -136,7 +136,7 @@ namespace RadarSimulator
                         else
                         {
                             Xmode = true;
-                            Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting X mode");
+                            //Console.WriteLine($"Id :{Id} , x: {_location.X}, y: {_location.Y}, starting X mode");
                             velocity = (float)((xpositive ? 1 : -1) * 0.1);
                         }
                     }
